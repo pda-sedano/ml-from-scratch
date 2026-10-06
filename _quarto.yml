@@ -3,7 +3,7 @@ project:
 
 website:
   title: "Machine Learning from Scratch"
-  site-url: https://USERNAME.github.io/ml-from-scratch
+  site-url: https://pda-sedano.github.io/ml-from-scratch
   navbar:
     left:
       - href: index.qmd
