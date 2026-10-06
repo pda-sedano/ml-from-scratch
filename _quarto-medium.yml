@@ -7,7 +7,7 @@ project:
     - "posts/**/*.qmd"
 
 # Public address of the site, no trailing slash. Relative links are rewritten against it.
-medium-base-url: https://USERNAME.github.io/ml-from-scratch
+medium-base-url: https://pda-sedano.github.io/ml-from-scratch
 
 format:
   html:
