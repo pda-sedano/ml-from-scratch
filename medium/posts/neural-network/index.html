@@ -186,7 +186,9 @@ Figure&nbsp;6: A feedforward neural network. The arrow shows the direction of da
 <h2 id="backpropagation">Backpropagation</h2>
 <p>In the post on logistic regression, we discussed gradient descent as a way to minimize a loss function expressing the error between predicted and target values. If you aren’t clear on this, I would recommend taking a look at that post before reading further. We can use gradient descent to train a neural network, but we need to find the gradient of the loss function with respect to all the weights and biases in the network. This is done using a technique called <em>backpropagation</em>, which computes these gradients by applying the chain rule of calculus.</p>
 <p>Backpropagation is probably <em>the</em> most important algorithm in modern machine learning. It is what allows neural networks to do everything from recognizing cat pictures to playing Go, predicting how proteins fold, and generating humanlike dialog. As with gradient descent, the basic idea behind it is surprisingly simple, though unfortunately the nitty-gritty math details are not.</p>
-<p>A feedforward neural network applies a sequence of operations to input data to produce its output. We can plug this final output into a loss function like Loss(<strong>Y</strong>ᴸ, <strong>T</strong>) where <strong>T</strong> is the target output. Assuming we know how to take the derivative of Loss, we can then compute its gradient w.r.t. <strong>Y</strong>ᴸ: ∇_(Yᴸ)Loss(<strong>Y</strong>ᴸ, <strong>T</strong>). That’s great and all, but we really need the gradients of Loss with respect to the weights and biases in every layer of the neural network. After all, these are the tunable parameters of the network which must be updated for it to learn. How do we obtain these? Using the chain rule.</p>
+<p>A feedforward neural network applies a sequence of operations to input data to produce its output. We can plug this final output into a loss function like Loss(<strong>Y</strong>ᴸ, <strong>T</strong>) where <strong>T</strong> is the target output. Assuming we know how to take the derivative of Loss, we can then compute its gradient w.r.t. <strong>Y</strong>ᴸ:</p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B140%7D%5Cbg%7Bwhite%7D%5Cnabla_%7B%5Cmathbf%7BY%7D%5EL%7D%20%5Ctext%7BLoss%7D%28%5Cmathbf%7BY%7D%5EL%2C%20%5Cmathbf%7BT%7D%29" class="equation"></p>
+<p>That’s great and all, but we really need the gradients of Loss with respect to the weights and biases in every layer of the neural network. After all, these are the tunable parameters of the network which must be updated for it to learn. How do we obtain these? Using the chain rule.</p>
 <p>Consider that the output of a given layer, <strong>Y</strong>ⁱ, influences the loss only through the rest of the sequence of operations in the network. Let ℒⁱ represent the rest of the neural network after layer <em>i</em>, including the loss function. So</p>
 <p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B140%7D%5Cbg%7Bwhite%7D%5Ctext%7BLoss%7D%20%3D%20%5Cmathcal%7BL%7D%5Ei%28%5Cmathbf%7BY%7D%5Ei%29" class="equation"></p>
 <p>By Equation&nbsp;3,</p>
@@ -194,17 +196,17 @@ Figure&nbsp;6: A feedforward neural network. The arrow shows the direction of da
 <p>so</p>
 <p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B140%7D%5Cbg%7Bwhite%7D%5Ctext%7BLoss%7D%20%3D%20%5Cmathcal%7BL%7D%5Ei%28f%5Ei%28%5Cmathbf%7BZ%7D%5Ei%29%29" class="equation"></p>
 <p>Now suppose we already know the gradient of loss w.r.t. the output of layer <em>i</em>. This is <strong>∇</strong>_(Yⁱ)Loss, or in index form,</p>
-<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B140%7D%5Cbg%7Bwhite%7D%5Cfrac%7B%5Cpartial%20%5Ctext%7BLoss%7D%7D%7B%5Cpartial%20y%5Ei_%7Bjk%7D%7D." class="equation"></p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B140%7D%5Cbg%7Bwhite%7D%5Cfrac%7B%5Cpartial%20%5Ctext%7BLoss%7D%7D%7B%5Cpartial%20y%5Ei_%7Bjk%7D%7D" class="equation"></p>
 <p>Via the multivariable chain rule,</p>
 <p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B140%7D%5Cbg%7Bwhite%7D%5Cfrac%7B%5Cpartial%20%5Ctext%7BLoss%7D%7D%7B%5Cpartial%20z%5Ei_%7Bjk%7D%7D%20%3D%20%5Csum_m%20%5Csum_n%20%5Cfrac%7B%5Cpartial%20%5Ctext%7BLoss%7D%7D%7B%5Cpartial%20y%5Ei_%7Bmn%7D%7D%20%5Cfrac%7B%5Cpartial%20y%5Ei_%7Bmn%7D%7D%7B%5Cpartial%20z%5Ei_%7Bjk%7D%7D" class="equation"></p>
 <p>By Equation&nbsp;4, <em>y</em>ₘₙⁱ only depends on <em>z</em>ⱼₖⁱ when <em>m</em> = <em>j</em> and <em>n</em> = <em>k</em>. In all other cases,</p>
-<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B140%7D%5Cbg%7Bwhite%7D%5Cfrac%7B%5Cpartial%20y%5Ei_%7Bmn%7D%7D%7B%5Cpartial%20z%5Ei_%7Bjk%7D%7D%20%3D%200." class="equation"></p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B140%7D%5Cbg%7Bwhite%7D%5Cfrac%7B%5Cpartial%20y%5Ei_%7Bmn%7D%7D%7B%5Cpartial%20z%5Ei_%7Bjk%7D%7D%20%3D%200" class="equation"></p>
 <p>Thus all but one term of the double sum vanishes and we are left with</p>
 <p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B140%7D%5Cbg%7Bwhite%7D%5Cfrac%7B%5Cpartial%20%5Ctext%7BLoss%7D%7D%7B%5Cpartial%20z%5Ei_%7Bjk%7D%7D%20%3D%20%5Cfrac%7B%5Cpartial%20%5Ctext%7BLoss%7D%7D%7B%5Cpartial%20y%5Ei_%7Bjk%7D%7D%20%5Cfrac%7B%5Cpartial%20y%5Ei_%7Bjk%7D%7D%7B%5Cpartial%20z%5Ei_%7Bjk%7D%7D%20%5Cqquad%285%29" class="equation"></p>
 <p>Now we can find the derivatives of the loss w.r.t. the weights and biases of the layer. Applying the multivariable chain rule to the first line of Equation&nbsp;4,</p>
 <p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B140%7D%5Cbg%7Bwhite%7D%5Cfrac%7B%5Cpartial%20%5Ctext%7BLoss%7D%7D%7B%5Cpartial%20w%5Ei_%7Bjk%7D%7D%20%3D%20%5Csum_m%20%5Csum_n%20%5Cfrac%7B%5Cpartial%20%5Ctext%7BLoss%7D%7D%7B%5Cpartial%20z%5Ei_%7Bmn%7D%7D%20%5Cfrac%7B%5Cpartial%20z%5Ei_%7Bmn%7D%7D%7B%5Cpartial%20w%5Ei_%7Bjk%7D%7D" class="equation"></p>
 <p>Note that if <em>m</em> ≠ <em>j</em> then <em>z</em>ₘₙⁱ does not depend on <em>w</em>ⱼₖⁱ and thus</p>
-<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B140%7D%5Cbg%7Bwhite%7D%5Cfrac%7B%5Cpartial%20z%5Ei_%7Bmn%7D%7D%7B%5Cpartial%20w%5Ei_%7Bjk%7D%7D%20%3D%200." class="equation"></p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B140%7D%5Cbg%7Bwhite%7D%5Cfrac%7B%5Cpartial%20z%5Ei_%7Bmn%7D%7D%7B%5Cpartial%20w%5Ei_%7Bjk%7D%7D%20%3D%200" class="equation"></p>
 <p>Consequently, the expression reduces to</p>
 <p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B140%7D%5Cbg%7Bwhite%7D%5Cfrac%7B%5Cpartial%20%5Ctext%7BLoss%7D%7D%7B%5Cpartial%20w%5Ei_%7Bjk%7D%7D%20%3D%20%5Csum_n%20%5Cfrac%7B%5Cpartial%20%5Ctext%7BLoss%7D%7D%7B%5Cpartial%20z%5Ei_%7Bjn%7D%7D%20%5Cfrac%7B%5Cpartial%20z%5Ei_%7Bjn%7D%7D%7B%5Cpartial%20w%5Ei_%7Bjk%7D%7D%20%5Cqquad%286%29" class="equation"></p>
 <p>Similarly for the bias,</p>
@@ -215,11 +217,11 @@ Figure&nbsp;6: A feedforward neural network. The arrow shows the direction of da
 <p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B140%7D%5Cbg%7Bwhite%7D%5Cfrac%7B%5Cpartial%20%5Ctext%7BLoss%7D%7D%7B%5Cpartial%20y%5E%7Bi%20-%201%7D_%7Bjk%7D%7D%20%3D%20%5Csum_m%20%5Cfrac%7B%5Cpartial%20%5Ctext%7BLoss%7D%7D%7B%5Cpartial%20z%5Ei_%7Bmk%7D%7D%20%5Cfrac%7B%5Cpartial%20z%5Ei_%7Bmk%7D%7D%7B%5Cpartial%20y%5E%7Bi%20-%201%7D_%7Bjk%7D%7D%20%5Cqquad%288%29" class="equation"></p>
 <p>We have come full circle. If we know the gradient of the loss w.r.t. the output of layer <em>i</em> we can not only obtain the gradients for that layer’s weights and biases, but also the gradient w.r.t. the output of layer <em>i</em> − 1. This enables us to repeat the whole process for the previous layer, and the one before that, and so on, <em>propagating</em> the gradients <em>back</em> throughout the entire network.</p>
 <p>In order to perform the calculations, we need the derivatives</p>
-<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B140%7D%5Cbg%7Bwhite%7D%5Cfrac%7B%5Cpartial%20y%5Ei_%7Bjk%7D%7D%7B%5Cpartial%20z%5Ei_%7Bjk%7D%7D%2C" class="equation"></p>
-<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B140%7D%5Cbg%7Bwhite%7D%5Cfrac%7B%5Cpartial%20z%5Ei_%7Bjn%7D%7D%7B%5Cpartial%20w%5Ei_%7Bjk%7D%7D%2C" class="equation"></p>
-<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B140%7D%5Cbg%7Bwhite%7D%5Cfrac%7B%5Cpartial%20z%5Ei_%7Bjn%7D%7D%7B%5Cpartial%20b%5Ei_j%7D%2C" class="equation"></p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B140%7D%5Cbg%7Bwhite%7D%5Cfrac%7B%5Cpartial%20y%5Ei_%7Bjk%7D%7D%7B%5Cpartial%20z%5Ei_%7Bjk%7D%7D" class="equation"></p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B140%7D%5Cbg%7Bwhite%7D%5Cfrac%7B%5Cpartial%20z%5Ei_%7Bjn%7D%7D%7B%5Cpartial%20w%5Ei_%7Bjk%7D%7D" class="equation"></p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B140%7D%5Cbg%7Bwhite%7D%5Cfrac%7B%5Cpartial%20z%5Ei_%7Bjn%7D%7D%7B%5Cpartial%20b%5Ei_j%7D" class="equation"></p>
 <p>and</p>
-<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B140%7D%5Cbg%7Bwhite%7D%5Cfrac%7B%5Cpartial%20z%5Ei_%7Bmk%7D%7D%7B%5Cpartial%20y%5E%7Bi%20-%201%7D_%7Bjk%7D%7D." class="equation"></p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B140%7D%5Cbg%7Bwhite%7D%5Cfrac%7B%5Cpartial%20z%5Ei_%7Bmk%7D%7D%7B%5Cpartial%20y%5E%7Bi%20-%201%7D_%7Bjk%7D%7D" class="equation"></p>
 <p>The first can easily be obtained from Equation&nbsp;4:</p>
 <p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B140%7D%5Cbg%7Bwhite%7D%5Cfrac%7B%5Cpartial%20y%5Ei_%7Bjk%7D%7D%7B%5Cpartial%20z%5Ei_%7Bjk%7D%7D%20%3D%20%7Bf%5Ei%7D%27%28z%5Ei_%7Bjk%7D%29%20%5Cqquad%289%29" class="equation"></p>
 <p>For the second, reindexing Equation&nbsp;4 gives</p>
@@ -332,11 +334,8 @@ Figure&nbsp;12: Architecture of the MNIST classifier.
 <h2 id="softmax">Softmax</h2>
 <p>In the post on logistic regression, we used the sigmoid function to map the real-valued output of a linear classifier to a probability. A single number was sufficient for binary classification, but now we need to map a vector of 10 real numbers in the range (−∞, ∞) into probabilities for each class. We want the relative sizes of the network’s outputs to be preserved. That is, if the unactivated output for class <em>i</em> is larger than that for class <em>j</em>, then the probability of class <em>i</em> should be larger than that of class <em>j</em>.</p>
 <p>How can we achieve these objectives? Let’s work backwards starting from a vector of class probabilities <strong>p</strong> = [<em>p</em>₁, <em>p</em>₂, …, <em>p</em>ₙ] such that</p>
-<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B140%7D%5Cbg%7Bwhite%7D%5Csum_%7Bi%3D1%7D%5E%7Bn%7D%20p_i%20%3D%201." class="equation"></p>
-<p>For any pair of probabilities <em>p</em>ᵢ and <em>p</em>ⱼ, we can compute the odds</p>
-<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B140%7D%5Cbg%7Bwhite%7D%5Cfrac%7Bp_i%7D%7Bp_j%7D." class="equation"></p>
-<p>We take the logarithm of this and obtain</p>
-<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B140%7D%5Cbg%7Bwhite%7D%5Clog%20%5Cfrac%7Bp_i%7D%7Bp_j%7D%20%3D%20%5Clog%20p_i%20-%20%5Clog%20p_j." class="equation"></p>
+<p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B140%7D%5Cbg%7Bwhite%7D%5Csum_%7Bi%3D1%7D%5E%7Bn%7D%20p_i%20%3D%201" class="equation"></p>
+<p>For any pair of probabilities <em>p</em>ᵢ and <em>p</em>ⱼ, we can compute the odds <em>p</em>ᵢ/<em>p</em>ⱼ. We take the logarithm of this and obtain log <em>p</em>ᵢ/<em>p</em>ⱼ = log <em>p</em>ᵢ − log <em>p</em>ⱼ.</p>
 <p>Now we will define a vector <strong>z</strong> = [<em>z</em>₁, <em>z</em>₂, …, <em>z</em>ₙ] where for all <em>i</em>, <em>j</em> ∈ {1, 2, …, <em>n</em>},</p>
 <p><img src="https://latex.codecogs.com/png.image?%5Cdpi%7B140%7D%5Cbg%7Bwhite%7Dz_i%20-%20z_j%20%3D%20%5Clog%20p_i%20-%20%5Clog%20p_j%20%5Cqquad%2817%29" class="equation"></p>
 <p>The elements of this vector are called <em>logits</em> in reference to the term <em>log-odds</em>.</p>
