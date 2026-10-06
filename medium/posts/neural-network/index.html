@@ -24,6 +24,11 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
+<style>
+body { max-width: 680px; margin: 2em auto; padding: 0 1em; font: 20px/1.6 Georgia, serif; }
+img { display: block; margin: 1.5em auto; max-width: 100%; height: auto; }
+pre { overflow-x: auto; font-size: 0.8em; background: #f4f4f4; padding: 1em; }
+</style>
 
 
 </head>
@@ -70,7 +75,7 @@ ul.task-list li input[type="checkbox"] {
 <div id="fig-neuron" class="quarto-float quarto-figure quarto-figure-center">
 <figure class="quarto-float quarto-float-fig">
 <div aria-describedby="fig-neuron-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="assets/neuron_diagram.png">
+<img src="https://pda-sedano.github.io/ml-from-scratch/posts/neural-network/assets/neuron_diagram.png">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-neuron-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;1: Neuron diagram. Courtesy of Clker-Free-Vector-Images on Pixabay.
@@ -81,7 +86,7 @@ Figure&nbsp;1: Neuron diagram. Courtesy of Clker-Free-Vector-Images on Pixabay.
 <div id="fig-artificial-neuron" class="quarto-float quarto-figure quarto-figure-center">
 <figure class="quarto-float quarto-float-fig">
 <div aria-describedby="fig-artificial-neuron-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="assets/artificial_neuron.png">
+<img src="https://pda-sedano.github.io/ml-from-scratch/posts/neural-network/assets/artificial_neuron.png">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-artificial-neuron-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;2: Artificial neuron. The bias is shown as an extra input, marked in red, with a weight of 1.
@@ -109,7 +114,7 @@ Figure&nbsp;2: Artificial neuron. The bias is shown as an extra input, marked in
 <div id="fig-fc" class="quarto-float quarto-figure quarto-figure-center">
 <figure class="quarto-float quarto-float-fig">
 <div aria-describedby="fig-fc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="assets/fully_connected_layer_4.png">
+<img src="https://pda-sedano.github.io/ml-from-scratch/posts/neural-network/assets/fully_connected_layer_4.png">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-fc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;3: Fully-connected layer with 3 inputs and 4 outputs.
@@ -121,7 +126,7 @@ Figure&nbsp;3: Fully-connected layer with 3 inputs and 4 outputs.
 <div id="fig-batch" class="quarto-float quarto-figure quarto-figure-center">
 <figure class="quarto-float quarto-float-fig">
 <div aria-describedby="fig-batch-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="assets/batch_matrix_1.png">
+<img src="https://pda-sedano.github.io/ml-from-scratch/posts/neural-network/assets/batch_matrix_1.png">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-batch-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;4: Batching visualized.
@@ -143,7 +148,7 @@ Figure&nbsp;4: Batching visualized.
 <div id="fig-bias-broadcast" class="quarto-float quarto-figure quarto-figure-center">
 <figure class="quarto-float quarto-float-fig">
 <div aria-describedby="fig-bias-broadcast-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="assets/bias_broadcast_2.png">
+<img src="https://pda-sedano.github.io/ml-from-scratch/posts/neural-network/assets/bias_broadcast_2.png">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bias-broadcast-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;5: Bias matrix visualized.
@@ -156,7 +161,7 @@ Figure&nbsp;5: Bias matrix visualized.
 <div id="fig-feedforward" class="quarto-float quarto-figure quarto-figure-center">
 <figure class="quarto-float quarto-float-fig">
 <div aria-describedby="fig-feedforward-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="assets/feedforward_network_2.png">
+<img src="https://pda-sedano.github.io/ml-from-scratch/posts/neural-network/assets/feedforward_network_2.png">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-feedforward-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;6: A feedforward neural network. The arrow shows the direction of data flow from input to output.
@@ -241,7 +246,7 @@ Figure&nbsp;6: A feedforward neural network. The arrow shows the direction of da
 <div id="fig-backprop" class="quarto-float quarto-figure quarto-figure-center">
 <figure class="quarto-float quarto-float-fig">
 <div aria-describedby="fig-backprop-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="assets/backprop_blocks_3.png">
+<img src="https://pda-sedano.github.io/ml-from-scratch/posts/neural-network/assets/backprop_blocks_3.png">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-backprop-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;7: Backpropagation through a layer.
@@ -256,7 +261,7 @@ train_data.head()</code></pre>
 <div id="fig-mnist-train-head" class="quarto-float quarto-figure quarto-figure-center">
 <figure class="quarto-float quarto-float-fig">
 <div aria-describedby="fig-mnist-train-head-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="assets/mnist_train_data_head.png">
+<img src="https://pda-sedano.github.io/ml-from-scratch/posts/neural-network/assets/mnist_train_data_head.png">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mnist-train-head-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;8: MNIST training data.
@@ -270,7 +275,7 @@ test_data.head()</code></pre>
 <div id="fig-mnist-test-head" class="quarto-float quarto-figure quarto-figure-center">
 <figure class="quarto-float quarto-float-fig">
 <div aria-describedby="fig-mnist-test-head-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="assets/mnist_test_data_head.png">
+<img src="https://pda-sedano.github.io/ml-from-scratch/posts/neural-network/assets/mnist_test_data_head.png">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mnist-test-head-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;9: MNIST test data.
@@ -284,7 +289,7 @@ Figure&nbsp;9: MNIST test data.
 <div id="fig-relu" class="quarto-float quarto-figure quarto-figure-center">
 <figure class="quarto-float quarto-float-fig">
 <div aria-describedby="fig-relu-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="assets/relu.png">
+<img src="https://pda-sedano.github.io/ml-from-scratch/posts/neural-network/assets/relu.png">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-relu-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;10: Graph of the ReLU function.
@@ -297,7 +302,7 @@ Figure&nbsp;10: Graph of the ReLU function.
 <div id="fig-one-hot" class="quarto-float quarto-figure quarto-figure-center">
 <figure class="quarto-float quarto-float-fig">
 <div aria-describedby="fig-one-hot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="assets/one_hot_digits.png">
+<img src="https://pda-sedano.github.io/ml-from-scratch/posts/neural-network/assets/one_hot_digits.png">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-one-hot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;11: One-hot representation of digits.
@@ -308,7 +313,7 @@ Figure&nbsp;11: One-hot representation of digits.
 <div id="fig-mnist-architecture" class="quarto-float quarto-figure quarto-figure-center">
 <figure class="quarto-float quarto-float-fig">
 <div aria-describedby="fig-mnist-architecture-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="assets/mnist_architecture_2.png">
+<img src="https://pda-sedano.github.io/ml-from-scratch/posts/neural-network/assets/mnist_architecture_2.png">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mnist-architecture-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;12: Architecture of the MNIST classifier.
@@ -832,7 +837,7 @@ epoch 30: train_loss=0.1066 train_acc=0.9737 eval_loss=0.1425 eval_acc=0.9579</c
 <div id="fig-acc" class="quarto-float quarto-figure quarto-figure-center">
 <figure class="quarto-float quarto-float-fig">
 <div aria-describedby="fig-acc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="assets/mnist_results_acc_2.png">
+<img src="https://pda-sedano.github.io/ml-from-scratch/posts/neural-network/assets/mnist_results_acc_2.png">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-acc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;13: Average accuracy per epoch.
@@ -842,7 +847,7 @@ Figure&nbsp;13: Average accuracy per epoch.
 <div id="fig-loss" class="quarto-float quarto-figure quarto-figure-center">
 <figure class="quarto-float quarto-float-fig">
 <div aria-describedby="fig-loss-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="assets/mnist_results_loss_2.png">
+<img src="https://pda-sedano.github.io/ml-from-scratch/posts/neural-network/assets/mnist_results_loss_2.png">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-loss-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;14: Average loss per epoch.
