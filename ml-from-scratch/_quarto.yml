@@ -1,0 +1,18 @@
+project:
+  type: website
+
+website:
+  title: "Machine Learning from Scratch"
+  site-url: https://USERNAME.github.io/ml-from-scratch
+  navbar:
+    left:
+      - href: index.qmd
+        text: Posts
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+
+execute:
+  freeze: auto

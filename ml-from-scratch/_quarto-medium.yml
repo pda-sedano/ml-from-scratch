@@ -1,0 +1,21 @@
+# Extra settings for the Medium-friendly copy of each post.
+# Used by:  quarto render --profile medium
+project:
+  type: default              # plain pages: no navbar, search, or site chrome
+  output-dir: _site/medium   # lands at <site>/medium/posts/<name>/
+  render:
+    - "posts/**/*.qmd"
+
+# Public address of the site, no trailing slash. Relative links are rewritten against it.
+medium-base-url: https://USERNAME.github.io/ml-from-scratch
+
+format:
+  html:
+    minimal: true
+    theme: none
+    toc: false
+    highlight-style: none    # plain <pre><code>, which Medium imports cleanly
+
+filters:
+  - at: post-quarto          # after Quarto resolves @eq- / @sec- / @fig- references
+    path: filters/medium.lua

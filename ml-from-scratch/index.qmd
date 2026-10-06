@@ -1,0 +1,7 @@
+---
+title: "Machine Learning from Scratch"
+listing:
+  contents: posts
+  sort: "date desc"
+  type: default
+---
