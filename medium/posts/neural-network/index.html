@@ -256,8 +256,7 @@ Figure&nbsp;7: Backpropagation through a layer.
 <h2 id="the-mnist-dataset">The MNIST Dataset</h2>
 <p>Now that we know how to train a neural network, let’s take a look at the data we will train it on.</p>
 <p>The dataset consists of grayscale images of handwritten digits, 28x28 pixels in size. Each image is flattened into a vector of 784 numbers in the range 0-255. The training data is provided as a CSV file, which we load into a pandas DataFrame with 785 columns. The first column, the label, indicates the correct digit for the image. The following columns contain the pixel values. The test data is stored similarly but omits the labels. Let’s take a look.</p>
-<pre class="python"><code>train_data = pd.read_csv('/kaggle/input/competitions/digit-recognizer/train.csv')
-train_data.head()</code></pre>
+<pre>train_data = pd.read_csv('/kaggle/input/competitions/digit-recognizer/train.csv')<br>train_data.head()</pre>
 <div id="fig-mnist-train-head" class="quarto-float quarto-figure quarto-figure-center">
 <figure class="quarto-float quarto-float-fig">
 <div aria-describedby="fig-mnist-train-head-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -268,10 +267,9 @@ Figure&nbsp;8: MNIST training data.
 </figcaption>
 </figure>
 </div>
-<pre class="python"><code>train_data.shape</code></pre>
+<pre>train_data.shape</pre>
 <p><code>(42000, 785)</code></p>
-<pre class="python"><code>test_data = pd.read_csv('/kaggle/input/competitions/digit-recognizer/test.csv')
-test_data.head()</code></pre>
+<pre>test_data = pd.read_csv('/kaggle/input/competitions/digit-recognizer/test.csv')<br>test_data.head()</pre>
 <div id="fig-mnist-test-head" class="quarto-float quarto-figure quarto-figure-center">
 <figure class="quarto-float quarto-float-fig">
 <div aria-describedby="fig-mnist-test-head-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -282,7 +280,7 @@ Figure&nbsp;9: MNIST test data.
 </figcaption>
 </figure>
 </div>
-<pre class="python"><code>test_data.shape</code></pre>
+<pre>test_data.shape</pre>
 <p><code>(28000, 784)</code></p>
 <h2 id="architecture-of-the-network">Architecture of the Network</h2>
 <p>With knowledge of the MNIST dataset, we can design a neural network for the digit classification task. I chose to create a network with one hidden layer. It takes 784 inputs since this is the number of pixels in each image. The hidden layer contains 4096 neurons, and its activation function is the <a href="https://en.wikipedia.org/wiki/Rectified_linear_unit">Rectified Linear Unit</a> or ReLU function, defined by <em>f</em>(<em>z</em>) = max (0, <em>z</em>). Why this function in particular? A simple answer is that it’s very cheap to compute, and has been shown to work well in practice. Another reason is that in order for the Universal Approximation Theorem to apply, the hidden layer must use a non-polynomial activation function and ReLU fits the bill.</p>
@@ -403,436 +401,49 @@ Figure&nbsp;12: Architecture of the MNIST classifier.
 <p>At last we have all the ingredients, and it’s time to code the neural network.</p>
 <p>It will use a modular design informed by Figure&nbsp;12. We will need several different types of layers.</p>
 <p>The first type will compute the unactivated output of a fully-connected layer, i.e. Equation&nbsp;1. This corresponds to the blue rectangles in Figure&nbsp;12. It will be called <code>Linear</code> because it implements a linear function of the input, and also to follow <a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Linear">PyTorch’s naming convention</a>.</p>
-<pre class="python"><code>rng = np.random.default_rng()
-
-
-class Linear:
-    """
-    A neural network layer which computes a linear function of the input using weights 
-    and biases that are trainable by backpropagation with gradient descent.
-
-    Parameters
-    ----------
-    n_inputs : int
-        Number of inputs to the layer.
-    n_outputs : int
-        Number of outputs from the layer.
-    """
-
-    def __init__(self, n_inputs, n_outputs):
-        # Weights are Kaiming initialized, drawn from a normal distribution with mean 0 and
-        # variance 2 / n_inputs.
-        self.weights = rng.normal(0, np.sqrt(2 / n_inputs), (n_outputs, n_inputs))
-        self.bias = np.zeros((n_outputs, 1))
-        self._last_input = None</code></pre>
+<pre>rng = np.random.default_rng()<br><br><br>class Linear:<br>    """<br>    A neural network layer which computes a linear function of the input using weights <br>    and biases that are trainable by backpropagation with gradient descent.<br><br>    Parameters<br>    ----------<br>    n_inputs : int<br>        Number of inputs to the layer.<br>    n_outputs : int<br>        Number of outputs from the layer.<br>    """<br><br>    def __init__(self, n_inputs, n_outputs):<br>        # Weights are Kaiming initialized, drawn from a normal distribution with mean 0 and<br>        # variance 2 / n_inputs.<br>        self.weights = rng.normal(0, np.sqrt(2 / n_inputs), (n_outputs, n_inputs))<br>        self.bias = np.zeros((n_outputs, 1))<br>        self._last_input = None</pre>
 <p>As you can see, a <code>Linear</code> layer is defined by the number of inputs and number of outputs. It then creates a weight matrix and bias vector with the corresponding shapes. The weights are initialized using a method called <a href="https://en.wikipedia.org/wiki/Weight_initialization#He_initialization">Kaiming initialization</a> which has been shown to improve the performance of neural networks using the ReLU activation function.</p>
 <p>The class has a <code>forward</code> method which performs the computation of Equation&nbsp;1.</p>
-<pre class="python"><code>    def forward(self, x):
-        """
-        Computes the output and saves the input for a future backward() call.
-        
-        Parameters
-        ----------
-        x : ndarray
-            Input array.
-
-        Returns
-        -------
-        ndarray
-            Output array.
-        """
-        self._last_input = x
-        
-        return self.weights @ x + self.bias</code></pre>
+<pre>    def forward(self, x):<br>        """<br>        Computes the output and saves the input for a future backward() call.<br>        <br>        Parameters<br>        ----------<br>        x : ndarray<br>            Input array.<br><br>        Returns<br>        -------<br>        ndarray<br>            Output array.<br>        """<br>        self._last_input = x<br>        <br>        return self.weights @ x + self.bias</pre>
 <p>Note that <a href="https://numpy.org/doc/stable/user/basics.broadcasting.html">NumPy’s array broadcasting rules</a> render the multiplication of the bias by <strong>1</strong>ᵀ unnecessary as long as the bias has shape <code>(n_outputs, 1)</code>.</p>
 <p>The class also has a <code>backward</code> method which takes a gradient as input. Using this and <code>self._last_input</code> stored from the most recent <code>forward</code> call, it computes <code>grad_wrt_weights</code>, <code>grad_wrt_bias</code>, and <code>grad_wrt_input</code> via Equation&nbsp;14, Equation&nbsp;15, and Equation&nbsp;16 respectively. It then performs a step of gradient descent by subtracting <code>grad_wrt_weights</code> and <code>grad_wrt_bias</code> from the weights and biases, nudging them in a direction that reduces loss for the training batch.</p>
-<pre class="python"><code>    def backward(self, gradient):
-        """
-        Updates weights and biases via gradient descent and returns a gradient for
-        backpropagation to a previous layer.
-
-        Parameters
-        ----------
-        gradient : ndarray of float
-            Gradient of loss w.r.t. the output of this layer.
-
-        Returns
-        -------
-        ndarray of float
-            Gradient of loss w.r.t. the input to this layer.
-        """
-        if self._last_input is None:
-            raise RuntimeError("forward(input) must be called before backward(gradient)")
-
-        grad_wrt_weights = gradient @ self._last_input.T
-        grad_wrt_bias = np.sum(gradient, axis=1, keepdims=True)
-        grad_wrt_input = self.weights.T @ gradient
-        
-        self.weights -= grad_wrt_weights
-        self.bias -= grad_wrt_bias
-        
-        return grad_wrt_input</code></pre>
+<pre>    def backward(self, gradient):<br>        """<br>        Updates weights and biases via gradient descent and returns a gradient for<br>        backpropagation to a previous layer.<br><br>        Parameters<br>        ----------<br>        gradient : ndarray of float<br>            Gradient of loss w.r.t. the output of this layer.<br><br>        Returns<br>        -------<br>        ndarray of float<br>            Gradient of loss w.r.t. the input to this layer.<br>        """<br>        if self._last_input is None:<br>            raise RuntimeError("forward(input) must be called before backward(gradient)")<br><br>        grad_wrt_weights = gradient @ self._last_input.T<br>        grad_wrt_bias = np.sum(gradient, axis=1, keepdims=True)<br>        grad_wrt_input = self.weights.T @ gradient<br>        <br>        self.weights -= grad_wrt_weights<br>        self.bias -= grad_wrt_bias<br>        <br>        return grad_wrt_input</pre>
 <p>Note that <code>np.sum(gradient, axis=1, keepdims=True)</code> produces an equivalent result to Equation&nbsp;15. Due to <code>keepdims=True</code>, the shape of <code>grad_wrt_bias</code> is <code>(n_outputs, 1)</code> rather than just <code>(n_outputs,)</code>. This means <code>grad_wrt_bias</code> has the same shape as <code>self.bias</code>, which is necessary for <code>self.bias -= grad_wrt_bias</code> to work as intended.</p>
 <p>Next we will create a ReLU layer, which computes Equation&nbsp;2.</p>
-<pre class="python"><code>class ReLU:
-    """
-    A neural network layer which applies the ReLU activation function to its input.
-    """
-    
-    def __init__(self):
-        self._last_input = None
-
-    def forward(self, x):
-        """
-        Computes the output and saves its input for a future backward() call.
-
-        Parameters
-        ----------
-        x : ndarray
-            Input array.
-
-        Returns
-        -------
-        ndarray
-            Result of applying ReLU to each element of the input array.
-        """
-        self._last_input = x
-        
-        return np.maximum(0, x)
-
-    def backward(self, gradient):
-        """
-        Computes the gradient of loss w.r.t. this layer's input.
-
-        Parameters
-        ----------
-        gradient : ndarray of float
-            Gradient of loss w.r.t. the output of this layer.
-
-        Returns
-        -------
-        ndarray of float
-            Gradient of loss w.r.t. the input to this layer.
-        """
-        if self._last_input is None:
-            raise RuntimeError("forward(input) must be called before backward(gradient)")
-
-        relu_deriv = (self._last_input &gt; 0).astype(float)
-        
-        return gradient * relu_deriv</code></pre>
+<pre>class ReLU:<br>    """<br>    A neural network layer which applies the ReLU activation function to its input.<br>    """<br>    <br>    def __init__(self):<br>        self._last_input = None<br><br>    def forward(self, x):<br>        """<br>        Computes the output and saves its input for a future backward() call.<br><br>        Parameters<br>        ----------<br>        x : ndarray<br>            Input array.<br><br>        Returns<br>        -------<br>        ndarray<br>            Result of applying ReLU to each element of the input array.<br>        """<br>        self._last_input = x<br>        <br>        return np.maximum(0, x)<br><br>    def backward(self, gradient):<br>        """<br>        Computes the gradient of loss w.r.t. this layer's input.<br><br>        Parameters<br>        ----------<br>        gradient : ndarray of float<br>            Gradient of loss w.r.t. the output of this layer.<br><br>        Returns<br>        -------<br>        ndarray of float<br>            Gradient of loss w.r.t. the input to this layer.<br>        """<br>        if self._last_input is None:<br>            raise RuntimeError("forward(input) must be called before backward(gradient)")<br><br>        relu_deriv = (self._last_input &gt; 0).astype(float)<br>        <br>        return gradient * relu_deriv</pre>
 <p>Like the <code>Linear</code> layer, it has <code>forward</code> and <code>backward</code> methods, and stores the input to <code>forward</code> for later use in <code>backward</code>. <code>backward</code> uses Equation&nbsp;13 and Equation&nbsp;24 to compute the backpropagated gradient.</p>
 <p>Together, <code>Linear</code> and <code>ReLU</code> can be combined to form a fully-connected layer. You may be wondering why I didn’t just combine them into a single class. This was my original design, but splitting them up has several advantages. It simplifies the gradient computations in each class, and enables a <code>Linear</code> layer to easily be coupled with different activation functions. It is also the method used by PyTorch.</p>
 <p>Next we implement the softmax function:</p>
-<pre class="python"><code>def softmax(logits, axis=0):
-    """
-    Parameters
-    ----------
-    logits : ndarray of float
-        Array of logits.
-    axis : int
-        The axis over which to apply softmax.
-
-    Returns
-    -------
-    ndarray of float
-        An array of probabilities, the result of applying softmax to the logits over the
-        specified axis.
-    """
-    shifted = logits - np.max(logits, axis=axis, keepdims=True)
-    exp = np.exp(shifted)
-    
-    return exp / np.sum(exp, axis=axis, keepdims=True)</code></pre>
+<pre>def softmax(logits, axis=0):<br>    """<br>    Parameters<br>    ----------<br>    logits : ndarray of float<br>        Array of logits.<br>    axis : int<br>        The axis over which to apply softmax.<br><br>    Returns<br>    -------<br>    ndarray of float<br>        An array of probabilities, the result of applying softmax to the logits over the<br>        specified axis.<br>    """<br>    shifted = logits - np.max(logits, axis=axis, keepdims=True)<br>    exp = np.exp(shifted)<br>    <br>    return exp / np.sum(exp, axis=axis, keepdims=True)</pre>
 <p>Subtracting the maximum logit from all the logits with <code>shifted = logits - np.max(logits, axis=axis, keepdims=True)</code> does not alter the resulting probabilities, and ensures that the largest value in the array is 0. This prevents numerical overflow caused by exponentiating a large number.</p>
 <p>Next we can implement cross-entropy loss.</p>
-<pre class="python"><code>class CELoss:
-    """
-    Cross-entropy loss on softmax(logits), averaged over samples.
-    """
-
-    def __init__(self):
-        self._last_target = None
-        self._last_probs = None</code></pre>
+<pre>class CELoss:<br>    """<br>    Cross-entropy loss on softmax(logits), averaged over samples.<br>    """<br><br>    def __init__(self):<br>        self._last_target = None<br>        self._last_probs = None</pre>
 <p>Its <code>forward</code> method takes in raw logits and the target output, computes probabilities from the logits using <code>softmax</code>, and then computes the loss via Equation&nbsp;20.</p>
-<pre class="python"><code>    def forward(self, logits, target):
-        """
-        Computes the cross-entropy loss for the given logits and targets. Saves targets and
-        probabilities for a future backward() call.
-
-        Parameters
-        ----------
-        logits : ndarray of float of shape (num_classes, num_samples)
-            Array of logits representing a probability distribution over classes for each
-            sample.
-        target : ndarray of shape (num_classes, num_samples)
-            The correct probability distributions over the classes, often one-hot
-            (probability 1 for the correct class and 0 for the incorrect classes).
-
-        Returns
-        -------
-        float
-            The cross-entropy loss averaged over the samples.
-        """
-        probs = softmax(logits)
-
-        self._last_target = target
-        self._last_probs = probs
-
-        num_samples = logits.shape[1]
-        loss = -np.sum(target * np.log(probs)) / num_samples
-        
-        return loss</code></pre>
+<pre>    def forward(self, logits, target):<br>        """<br>        Computes the cross-entropy loss for the given logits and targets. Saves targets and<br>        probabilities for a future backward() call.<br><br>        Parameters<br>        ----------<br>        logits : ndarray of float of shape (num_classes, num_samples)<br>            Array of logits representing a probability distribution over classes for each<br>            sample.<br>        target : ndarray of shape (num_classes, num_samples)<br>            The correct probability distributions over the classes, often one-hot<br>            (probability 1 for the correct class and 0 for the incorrect classes).<br><br>        Returns<br>        -------<br>        float<br>            The cross-entropy loss averaged over the samples.<br>        """<br>        probs = softmax(logits)<br><br>        self._last_target = target<br>        self._last_probs = probs<br><br>        num_samples = logits.shape[1]<br>        loss = -np.sum(target * np.log(probs)) / num_samples<br>        <br>        return loss</pre>
 <p>The <code>backward</code> method uses Equation&nbsp;23 to get the gradient of the loss w.r.t. the logits.</p>
-<pre class="python"><code>    def backward(self):
-        """
-        Computes the gradient of the loss w.r.t. the logits from the most recent forward()
-        call.
-        
-        Returns
-        -------
-        ndarray of float of shape (num_classes, num_samples)
-            Gradient of loss w.r.t. the logits.
-        """
-        if self._last_probs is None:
-            raise RuntimeError(
-                "forward(logits, target) must be called before backward()"
-            )
-            
-        num_samples = self._last_probs.shape[1]
-        
-        return (self._last_probs - self._last_target) / num_samples</code></pre>
+<pre>    def backward(self):<br>        """<br>        Computes the gradient of the loss w.r.t. the logits from the most recent forward()<br>        call.<br>        <br>        Returns<br>        -------<br>        ndarray of float of shape (num_classes, num_samples)<br>            Gradient of loss w.r.t. the logits.<br>        """<br>        if self._last_probs is None:<br>            raise RuntimeError(<br>                "forward(logits, target) must be called before backward()"<br>            )<br>            <br>        num_samples = self._last_probs.shape[1]<br>        <br>        return (self._last_probs - self._last_target) / num_samples</pre>
 <p>Now we can create a class to represent a feedforward neural network. I have tried to make it maximally flexible, allowing it to contain any number of layers of any type as long as they have <code>forward</code> and <code>backward</code> methods.</p>
-<pre class="python"><code>class FeedforwardNN:
-    """
-    A feedforward neural network with customizable layers, loss function and learning rate.
-
-    Parameters
-    ----------
-    layers : list of object
-        A list of layers in the neural network. Each layer should have a forward method
-        which computes its output and a backward method which computes gradients for
-        backpropagation and updates the layer's parameters by gradient descent if
-        applicable.
-    loss : object
-        The loss to use for the neural network. Requires a backward method to compute the
-        gradient of loss w.r.t. the output of the neural network.
-    learning_rate : float
-        Parameter controlling how large an update is made to the network's parameters
-        during each step of gradient descent.
-    """
-    
-    def __init__(self, layers, loss, learning_rate):
-        self.layers = layers
-        self._loss = loss
-        self.learning_rate = learning_rate
-        self._output = None
-
-    def forward(self, x):
-        """
-        Passes input through all the layers of the network, computing the final output.
-        Saves the output for a future loss() call.
-
-        Parameters
-        ----------
-        x : ndarray
-            Array of input to the network.
-
-        Returns
-        -------
-        ndarray
-            The output of the network for the given input.
-        """
-        self._output = x
-        
-        for layer in self.layers:
-            self._output = layer.forward(self._output)
-        
-        return self._output
-
-    def loss(self, target):
-        """
-        Computes the loss from the last forward() call.
-
-        Parameters
-        ----------
-        target : ndarray
-            The correct outputs which the network should have returned.
-
-        Returns
-        -------
-        float
-            Loss for the most recent forward() call.
-        """
-        if self._output is None:
-            raise RuntimeError("forward(input) must be called before loss(target)")
-            
-        return self._loss.forward(self._output, target)
-
-    def backward(self):
-        """
-        Performs backpropagation with gradient descent to train the neural network.
-        Will only work if forward() and loss() have already been called.
-        """
-        gradient = self.learning_rate * self._loss.backward()
-
-        for layer in reversed(self.layers):
-            gradient = layer.backward(gradient)</code></pre>
+<pre>class FeedforwardNN:<br>    """<br>    A feedforward neural network with customizable layers, loss function and learning rate.<br><br>    Parameters<br>    ----------<br>    layers : list of object<br>        A list of layers in the neural network. Each layer should have a forward method<br>        which computes its output and a backward method which computes gradients for<br>        backpropagation and updates the layer's parameters by gradient descent if<br>        applicable.<br>    loss : object<br>        The loss to use for the neural network. Requires a backward method to compute the<br>        gradient of loss w.r.t. the output of the neural network.<br>    learning_rate : float<br>        Parameter controlling how large an update is made to the network's parameters<br>        during each step of gradient descent.<br>    """<br>    <br>    def __init__(self, layers, loss, learning_rate):<br>        self.layers = layers<br>        self._loss = loss<br>        self.learning_rate = learning_rate<br>        self._output = None<br><br>    def forward(self, x):<br>        """<br>        Passes input through all the layers of the network, computing the final output.<br>        Saves the output for a future loss() call.<br><br>        Parameters<br>        ----------<br>        x : ndarray<br>            Array of input to the network.<br><br>        Returns<br>        -------<br>        ndarray<br>            The output of the network for the given input.<br>        """<br>        self._output = x<br>        <br>        for layer in self.layers:<br>            self._output = layer.forward(self._output)<br>        <br>        return self._output<br><br>    def loss(self, target):<br>        """<br>        Computes the loss from the last forward() call.<br><br>        Parameters<br>        ----------<br>        target : ndarray<br>            The correct outputs which the network should have returned.<br><br>        Returns<br>        -------<br>        float<br>            Loss for the most recent forward() call.<br>        """<br>        if self._output is None:<br>            raise RuntimeError("forward(input) must be called before loss(target)")<br>            <br>        return self._loss.forward(self._output, target)<br><br>    def backward(self):<br>        """<br>        Performs backpropagation with gradient descent to train the neural network.<br>        Will only work if forward() and loss() have already been called.<br>        """<br>        gradient = self.learning_rate * self._loss.backward()<br><br>        for layer in reversed(self.layers):<br>            gradient = layer.backward(gradient)</pre>
 <p>Note that the <code>backward</code> method scales the gradient by <code>self.learning_rate</code> before passing it back through the layers. This allows the learning rate to control the size of the gradient descent steps each <code>Linear</code> layer takes. A more advanced implementation could enable per-layer tuning of the learning rate.</p>
 <h2 id="training-the-neural-network">Training the Neural Network</h2>
 <p>Let’s write a function that evaluates a network’s performance on a set of samples and targets.</p>
-<pre class="python"><code>def evaluate(model, X, Y):
-    """
-    Gets mean loss and accuracy over (X, Y), without updating the model.
-
-    Parameters
-    ----------
-    model : FeedforwardNN
-        The neural network.
-    X : ndarray of float of shape (num_samples, num_inputs)
-        The array of inputs to be used for the evaluation.
-    Y : ndarray of shape (num_samples, num_classes)
-        The array of targets (correct classes) for the corresponding inputs.
-
-    Returns
-    -------
-    tuple
-        The model's average loss and proportion of correct answers.
-    """
-    num_samples = X.shape[0]
-
-    # transpose to comply with input format expected by the model.
-    X = X.T # (num_samples, num_inputs) -&gt; (num_inputs, num_samples)
-    Y = Y.T # (num_samples, num_classes) -&gt; (num_classes, num_samples)
-    
-    logits = model.forward(X)
-    loss = model.loss(Y)
-    num_correct = np.sum(np.argmax(logits, axis=0) == np.argmax(Y, axis=0))
-
-    return loss, num_correct / num_samples</code></pre>
+<pre>def evaluate(model, X, Y):<br>    """<br>    Gets mean loss and accuracy over (X, Y), without updating the model.<br><br>    Parameters<br>    ----------<br>    model : FeedforwardNN<br>        The neural network.<br>    X : ndarray of float of shape (num_samples, num_inputs)<br>        The array of inputs to be used for the evaluation.<br>    Y : ndarray of shape (num_samples, num_classes)<br>        The array of targets (correct classes) for the corresponding inputs.<br><br>    Returns<br>    -------<br>    tuple<br>        The model's average loss and proportion of correct answers.<br>    """<br>    num_samples = X.shape[0]<br><br>    # transpose to comply with input format expected by the model.<br>    X = X.T # (num_samples, num_inputs) -&gt; (num_inputs, num_samples)<br>    Y = Y.T # (num_samples, num_classes) -&gt; (num_classes, num_samples)<br>    <br>    logits = model.forward(X)<br>    loss = model.loss(Y)<br>    num_correct = np.sum(np.argmax(logits, axis=0) == np.argmax(Y, axis=0))<br><br>    return loss, num_correct / num_samples</pre>
 <p>Next we can write the core training loop.</p>
-<pre class="python"><code>def train(model, X, Y, epochs, batch_size, X_eval, Y_eval):
-    """
-    Trains a neural network on the given inputs and targets for a certain number of epochs.
-    Reports training and evaluation data for the training run.   
-
-    Parameters
-    ----------
-    model : FeedforwardNN
-        The neural network to be trained.
-    X : ndarray of float of shape (num_samples, num_inputs)
-        The array of inputs to be used for training.
-    Y : ndarray of shape (num_samples, num_classes)
-        The array of targets (correct classes) for the corresponding inputs.
-    epochs : int
-        Number of training epochs.
-    batch_size : int
-        How many inputs to feed the network at once during training.
-    X_eval : ndarray of float of shape (num_samples, num_inputs)
-        An array of inputs to be used for evaluation, separate from the training set.
-    Y_eval : ndarray of shape (num_samples, num_classes)
-        The array of targets for the corresponding evaluation inputs.
-
-    Returns
-    -------
-    dict
-        A history dict of per-epoch metrics. Epoch 0 performance is measured before
-        training. After that, training metrics are averaged over each epoch's batches as
-        the weights update, while eval metrics are measured once the epoch has finished.
-    """
-    num_samples = X.shape[0]
-    history = {"train_loss": [], "train_acc": [], "eval_loss": [], "eval_acc": []}
-
-    def record(epoch, train_loss, train_acc):
-        history["train_loss"].append(train_loss)
-        history["train_acc"].append(train_acc)
-        message = f"epoch {epoch}: train_loss={train_loss:.4f} train_acc={train_acc:.4f}"
-
-        eval_loss, eval_acc = evaluate(model, X_eval, Y_eval)
-        history["eval_loss"].append(eval_loss)
-        history["eval_acc"].append(eval_acc)
-        message += f" eval_loss={eval_loss:.4f} eval_acc={eval_acc:.4f}"
-
-        print(message)
-
-    record(0, *evaluate(model, X, Y))
-    
-    for epoch in range(1, epochs + 1):
-        perm = rng.permutation(num_samples)
-        X, Y = X[perm], Y[perm]
-
-        total_loss = 0.0
-        num_correct = 0
-        
-        for start in range(0, num_samples, batch_size):
-            # transpose to comply with input format expected by the model.
-            batch_X = X[start:start + batch_size].T
-            batch_Y = Y[start:start + batch_size].T
-
-            logits = model.forward(batch_X)
-            total_loss += model.loss(batch_Y) * batch_X.shape[1]
-            num_correct += np.sum(
-                np.argmax(logits, axis=0) == np.argmax(batch_Y, axis=0)
-            )
-            model.backward()
-
-        record(epoch, total_loss / num_samples, num_correct / num_samples)
-
-    return history</code></pre>
+<pre>def train(model, X, Y, epochs, batch_size, X_eval, Y_eval):<br>    """<br>    Trains a neural network on the given inputs and targets for a certain number of epochs.<br>    Reports training and evaluation data for the training run.   <br><br>    Parameters<br>    ----------<br>    model : FeedforwardNN<br>        The neural network to be trained.<br>    X : ndarray of float of shape (num_samples, num_inputs)<br>        The array of inputs to be used for training.<br>    Y : ndarray of shape (num_samples, num_classes)<br>        The array of targets (correct classes) for the corresponding inputs.<br>    epochs : int<br>        Number of training epochs.<br>    batch_size : int<br>        How many inputs to feed the network at once during training.<br>    X_eval : ndarray of float of shape (num_samples, num_inputs)<br>        An array of inputs to be used for evaluation, separate from the training set.<br>    Y_eval : ndarray of shape (num_samples, num_classes)<br>        The array of targets for the corresponding evaluation inputs.<br><br>    Returns<br>    -------<br>    dict<br>        A history dict of per-epoch metrics. Epoch 0 performance is measured before<br>        training. After that, training metrics are averaged over each epoch's batches as<br>        the weights update, while eval metrics are measured once the epoch has finished.<br>    """<br>    num_samples = X.shape[0]<br>    history = {"train_loss": [], "train_acc": [], "eval_loss": [], "eval_acc": []}<br><br>    def record(epoch, train_loss, train_acc):<br>        history["train_loss"].append(train_loss)<br>        history["train_acc"].append(train_acc)<br>        message = f"epoch {epoch}: train_loss={train_loss:.4f} train_acc={train_acc:.4f}"<br><br>        eval_loss, eval_acc = evaluate(model, X_eval, Y_eval)<br>        history["eval_loss"].append(eval_loss)<br>        history["eval_acc"].append(eval_acc)<br>        message += f" eval_loss={eval_loss:.4f} eval_acc={eval_acc:.4f}"<br><br>        print(message)<br><br>    record(0, *evaluate(model, X, Y))<br>    <br>    for epoch in range(1, epochs + 1):<br>        perm = rng.permutation(num_samples)<br>        X, Y = X[perm], Y[perm]<br><br>        total_loss = 0.0<br>        num_correct = 0<br>        <br>        for start in range(0, num_samples, batch_size):<br>            # transpose to comply with input format expected by the model.<br>            batch_X = X[start:start + batch_size].T<br>            batch_Y = Y[start:start + batch_size].T<br><br>            logits = model.forward(batch_X)<br>            total_loss += model.loss(batch_Y) * batch_X.shape[1]<br>            num_correct += np.sum(<br>                np.argmax(logits, axis=0) == np.argmax(batch_Y, axis=0)<br>            )<br>            model.backward()<br><br>        record(epoch, total_loss / num_samples, num_correct / num_samples)<br><br>    return history</pre>
 <p>The model is trained on training samples <code>X</code> and targets <code>Y</code>, and evaluated on <code>X_eval</code> and <code>Y_eval</code>. Evaluating on separate data is important because it checks whether the model is <a href="https://en.wikipedia.org/wiki/Overfitting">overfitting</a> to training data.</p>
 <p>The helper function <code>record</code> appends training loss and accuracy to the <code>history</code> dict and then runs <code>evaluate</code> on the model. Before any training has occurred the model’s performance is assessed with <code>record(0, *evaluate(model, X, Y))</code>. Then the main training loop runs: for each training epoch, <code>X, Y = X[perm], Y[perm]</code> shuffles the training data and targets. We step through the shuffled data in chunks of size <code>batch_size</code> (the last chunk will be shorter if the data length is not divisible by <code>batch_size</code>), run the model on each batch, compute the loss and accuracy, and train the model via <code>model.backward()</code>. At the end of each epoch, we call <code>record</code>, passing it the training loss and accuracy for that epoch.</p>
 <p>We can now preprocess the data, define the model, and train it!</p>
-<pre class="python"><code>EPOCHS = 30
-
-if __name__ == '__main__':
-    # divide by 255 to normalize pixel values
-    # makes training more numerically well-behaved
-    X = train_data.drop('label', axis=1).values / 255.0
-    labels = train_data['label'].values
-    Y = np.eye(10)[labels] # convert labels to one-hot representation
-    
-    # Hold out 10% of the labelled data for evaluation
-    perm = rng.permutation(X.shape[0])
-    num_eval = X.shape[0] // 10
-    X_eval, Y_eval = X[perm[:num_eval]], Y[perm[:num_eval]]
-    X_train, Y_train = X[perm[num_eval:]], Y[perm[num_eval:]]
-    
-    model = FeedforwardNN(
-        layers=[Linear(784, 4096), ReLU(), Linear(4096, 10)],
-        loss=CELoss(),
-        learning_rate=0.01,
-    )
-    
-    history = train(
-        model,
-        X_train,
-        Y_train,
-        epochs=EPOCHS,
-        batch_size=64,
-        X_eval=X_eval,
-        Y_eval=Y_eval
-    )</code></pre>
+<pre>EPOCHS = 30<br><br>if __name__ == '__main__':<br>    # divide by 255 to normalize pixel values<br>    # makes training more numerically well-behaved<br>    X = train_data.drop('label', axis=1).values / 255.0<br>    labels = train_data['label'].values<br>    Y = np.eye(10)[labels] # convert labels to one-hot representation<br>    <br>    # Hold out 10% of the labelled data for evaluation<br>    perm = rng.permutation(X.shape[0])<br>    num_eval = X.shape[0] // 10<br>    X_eval, Y_eval = X[perm[:num_eval]], Y[perm[:num_eval]]<br>    X_train, Y_train = X[perm[num_eval:]], Y[perm[num_eval:]]<br>    <br>    model = FeedforwardNN(<br>        layers=[Linear(784, 4096), ReLU(), Linear(4096, 10)],<br>        loss=CELoss(),<br>        learning_rate=0.01,<br>    )<br>    <br>    history = train(<br>        model,<br>        X_train,<br>        Y_train,<br>        epochs=EPOCHS,<br>        batch_size=64,<br>        X_eval=X_eval,<br>        Y_eval=Y_eval<br>    )</pre>
 <p>The line <code>Y = np.eye(10)[labels]</code> deserves some extra explanation. <code>np.eye(10)</code> creates a 10x10 identity matrix. Then <code>np.eye(10)[labels]</code> takes the <code>labels</code> (a vector of digits), and uses each digit as an index for this identity matrix. The result is a new matrix whose rows are one-hot vectors for each digit, since the <em>i</em>th row of the identity matrix has a 1 in the <em>i</em>th position and zeros in all other positions.</p>
 <p>A <code>FeedforwardNN</code> is created based on Figure&nbsp;12. One difference you may notice is that the network’s output is the logits and the final <code>softmax</code> step occurs only within <code>CELoss</code>. This is fine for classification since the largest logit will correspond to the largest probability, so the predicted class is just the argmax of the logits. Hence the use of <code>np.argmax</code> in the <code>evaluate</code> and <code>train</code> functions.</p>
 <p>Finally, the model is trained for 30 epochs with a batch size of 64.</p>
 <h2 id="kaggle-submission">Kaggle Submission</h2>
 <p>Below is the code used to submit the model’s predictions for the Digit Recognizer competition.</p>
-<pre class="python"><code>X_test = test_data.values / 255.0
-# Transpose X_test to comply with model input shape.
-predictions = model.forward(X_test.T).argmax(axis=0)
-submission = pd.DataFrame({
-    'ImageId': np.arange(1, len(predictions) + 1),
-    'Label': predictions,
-})
-submission.to_csv('submission.csv', index=False)</code></pre>
+<pre>X_test = test_data.values / 255.0<br># Transpose X_test to comply with model input shape.<br>predictions = model.forward(X_test.T).argmax(axis=0)<br>submission = pd.DataFrame({<br>    'ImageId': np.arange(1, len(predictions) + 1),<br>    'Label': predictions,<br>})<br>submission.to_csv('submission.csv', index=False)</pre>
 <p>Now let’s look at how well the network completes the task of classifying handwritten digits.</p>
 <h2 id="results">Results</h2>
 <p>Below is a summary of the model’s training and evaluation performance at intervals of 5 epochs.</p>
-<pre><code>epoch 0: train_loss=2.3755 train_acc=0.1045 eval_loss=2.3752 eval_acc=0.1029
-epoch 5: train_loss=0.2543 train_acc=0.9306 eval_loss=0.2575 eval_acc=0.9274
-epoch 10: train_loss=0.1968 train_acc=0.9470 eval_loss=0.2131 eval_acc=0.9374
-epoch 15: train_loss=0.1636 train_acc=0.9560 eval_loss=0.1847 eval_acc=0.9457
-epoch 20: train_loss=0.1397 train_acc=0.9639 eval_loss=0.1659 eval_acc=0.9502
-epoch 25: train_loss=0.1213 train_acc=0.9699 eval_loss=0.1519 eval_acc=0.9538
-epoch 30: train_loss=0.1066 train_acc=0.9737 eval_loss=0.1425 eval_acc=0.9579</code></pre>
+<pre>epoch 0: train_loss=2.3755 train_acc=0.1045 eval_loss=2.3752 eval_acc=0.1029<br>epoch 5: train_loss=0.2543 train_acc=0.9306 eval_loss=0.2575 eval_acc=0.9274<br>epoch 10: train_loss=0.1968 train_acc=0.9470 eval_loss=0.2131 eval_acc=0.9374<br>epoch 15: train_loss=0.1636 train_acc=0.9560 eval_loss=0.1847 eval_acc=0.9457<br>epoch 20: train_loss=0.1397 train_acc=0.9639 eval_loss=0.1659 eval_acc=0.9502<br>epoch 25: train_loss=0.1213 train_acc=0.9699 eval_loss=0.1519 eval_acc=0.9538<br>epoch 30: train_loss=0.1066 train_acc=0.9737 eval_loss=0.1425 eval_acc=0.9579</pre>
 <p>Here are graphs of accuracy and loss for the same training run.</p>
 <div id="fig-acc" class="quarto-float quarto-figure quarto-figure-center">
 <figure class="quarto-float quarto-float-fig">
