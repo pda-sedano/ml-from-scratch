@@ -1,0 +1,10 @@
+/* Icon for the Hub navbar link. Quarto's `icon:` only takes Bootstrap icon
+   names, so the custom SVG is drawn here instead, sized like a .bi icon. */
+.navbar a.nav-link[href="https://pda-sedano.github.io/orbital-hub/"]::before {
+  content: "";
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.125em;
+  background: url("assets/hub-icon.svg") center / contain no-repeat;
+}
